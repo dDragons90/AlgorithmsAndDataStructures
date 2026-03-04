@@ -1,3 +1,101 @@
-<Solution>
-  <Project Path="game/GuessTheNumber.csproj" />
-</Solution>
+using System;
+
+namespace game
+{
+    internal class GuessTheNumber
+    {
+        static void Main(string[] args)
+        {
+            StartGame();
+        }
+
+        static void StartGame()
+        {
+            int min = 0;
+            int max = 0;
+            int totalAttempts = 0;
+            int gamesCount = 0;
+
+            Random rnd = new Random();
+            char answer;
+
+            do
+            {
+                int attempts = PlayOneGame(rnd);
+
+                if (min == 0 || attempts < min)
+                    min = attempts;
+
+                if (attempts > max)
+                    max = attempts;
+
+                totalAttempts += attempts;
+                gamesCount++;
+
+                answer = AskForRepeat();
+
+            } while (answer == 'Y' || answer == 'y');
+
+            ShowStatistics(min, max, totalAttempts, gamesCount);
+        }
+
+        static int PlayOneGame(Random rnd)
+        {
+            int number = rnd.Next(1, 101);
+            int counter = 0;
+
+            Console.WriteLine("Try guess number!");
+
+            while (true)
+            {
+                counter++;
+                int userNumber = GetUserNumber();
+
+                if (userNumber > number)
+                    Console.WriteLine("Your number is greater");
+                else if (userNumber < number)
+                    Console.WriteLine("Your number is less");
+                else
+                {
+                    Console.WriteLine("You win!!!!!!!!!");
+                    break;
+                }
+            }
+
+            return counter;
+        }
+
+        static int GetUserNumber()
+        {
+            int userNumber;
+
+            for (int i = 0; i < 2; i++)
+            {
+                Console.WriteLine("Input number from [1,100]");
+
+                if (int.TryParse(Console.ReadLine(), out userNumber)
+                    && userNumber >= 1 && userNumber <= 100)
+                {
+                    return userNumber;
+                }
+
+                Console.WriteLine("Invalid input!");
+            }
+
+            Console.WriteLine("Too many wrong attempts. Game over.");
+            Environment.Exit(0);
+            return 0;
+        }
+        static char AskForRepeat()
+        {
+            Console.WriteLine("Do you want play game? (Y/N)");
+            return Convert.ToChar(Console.ReadLine());
+        }
+
+        static void ShowStatistics(int min, int max, int total, int count)
+        {
+            double avg = (double)total / count;
+            Console.WriteLine($"min = {min} max = {max} avg = {avg:F2}");
+        }
+    }
+}
